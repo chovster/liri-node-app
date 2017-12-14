@@ -1,15 +1,18 @@
-var fs = require(fs);
+var fs = require("fs");
 var apiKeys = require("./keys.js");
-var spotify = require("spotify");
+var spotify = require("node-spotify-api");
 var request = require("request");
 var twitter = require("twitter");
 
-var twitterApiKey = new Twitter(apiKeys.twitterKeys);
+var client = new twitter(apiKeys.twitterKeys);
+var spotifyApiKey = new spotify(apiKeys.spotifyKeys);
 
 var command = process.argv[2];
+var spotifySearch = process.argv[3];
 
+function switchCommand() {
 switch(command){
-    case "my-tweet":
+    case "my-tweets":
       myTweets();
       break;
 
@@ -25,47 +28,56 @@ switch(command){
       doWhatItSays();
       break;
 }
-
-  function getTweets(){
+};
+  function myTweets(){
   var params = {screen_name: 'JamesBondCoding',
                 count: 20};
-  twitterApiKey.get('statuses/user_timeline', params, function(error, tweets, response) {
+  client.get('statuses/user_timeline', params, function(error, tweets, response) {
+//    console.log(tweets);
     if (error) {
-      console.log("Got an error " + error);
-      console.log("<---------------------------->");
+      console.log(error);
+      
     } else {
-        for (var i =0; i < tweets.length; i++){
+        for (var i =0; i <= 19; i++){
       console.log("My Tweet: " + tweets[i].text + '\n' + " Data Created: " + tweets[i].created_at);    
-      console.log("<----------------------------->");
-      }
+	  console.log("<----------------------------->");
+	
+	  }
+	// console.log(tweets);
     }
     });
   };
   myTweets();
-  // ------------------------------------Twitter Request
-  client.get(path, params, callback);
-  client.post(path, params, callback);
-  client.stream(path, params, callback);
-
-
-
-
+ 
 
 //------------------------------------- Spotify
-  var Spotify = require('node-spotify-api');
-  
- var spotify = new Spotify({
-   id: <your spotify client id>,
-   secret: <your spotify client secret>
- });
-  
- spotify.search({ type: 'track', query: 'All the Small Things' }, function(err, data) {
-   if (err) {
-     return console.log('Error occurred: ' + err);
+
+function spotifyThisSong(){
+// var spotify = new Spotify({spotifyApiKey});
+  console.log('Music time!')
+  if (spotifySearch === undefined || spotifySearch ==="")
+    console.log('No song selected, oh well too bad. Here is a song for you');
+    spotifySearch = 'The Sign Ace of Base'
+};
+
+spotifyApiKey.search({ type: 'track', query: 'All the Small Things' }, function(err, data) {
+ if (err) {
+   return console.log('Oh shit an error occurred: ' + err);
+ } else {
+   for (var i = 0; data.tracks.items[0].artists.length; i++){
+     console.log ("Artist: " + data.tracks.items[0].artists[i].name);
    }
-  
- console.log(data); 
- });
+   console.log ("Song Name: " + data.tracks.items[0].name);
+   console.log ("Preview " + data.tracks.items[0].preview_url);
+   console.log ("Album Name " + data.tracks.items[0].album.name);
+ }
+
+console.log(data); 
+});
+
+
+
+
 
 
 
@@ -74,11 +86,17 @@ switch(command){
 //--------------------------------------- Request
 
 
-  request('http://www.google.com', function (error, response, body) {
-    console.log('error:', error); // Print the error if one occurred
-    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-    console.log('body:', body); // Print the HTML for the Google homepage.
-  }); 
+//   request('http://www.google.com', function (error, response, body) {
+//     console.log('error:', error); // Print the error if one occurred
+//     console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+//     console.log('body:', body); // Print the HTML for the Google homepage.
+//   }); 
+
+
+
+
+
+
 
 
 
